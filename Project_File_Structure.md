@@ -12,7 +12,7 @@ The structure is intentionally modular so that the team can develop the ML pipel
 signalforge/
 │
 ├── README.md
-├── PROJECT_STRUCTURE.md
+├── Project_File_Structure.md
 ├── LICENSE
 ├── CONTRIBUTING.md
 ├── CHANGELOG.md
