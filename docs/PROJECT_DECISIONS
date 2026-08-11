@@ -1,0 +1,71 @@
+# SignalForge Project Decisions
+
+This document records important architectural and technical decisions
+made during development.
+
+---
+
+## Decision 001 — Primary Database
+
+**Decision:** PostgreSQL
+
+**Reason:**
+SignalForge requires structured relationships between sources,
+communities, posts, features, signals, and signal events.
+
+PostgreSQL provides strong relational querying and is suitable for
+analytics-oriented workloads.
+
+**Status:** Accepted
+
+---
+
+## Decision 002 — Backend
+
+**Decision:** Python + FastAPI
+
+**Reason:**
+Python integrates naturally with the ML pipeline while FastAPI provides
+a lightweight API layer.
+
+**Status:** Accepted
+
+---
+
+## Decision 003 — Core ML Framework
+
+**Decision:** Start with scikit-learn and statistical methods.
+
+**Reason:**
+The first objective is reliable micro-trend detection rather than
+introducing deep learning unnecessarily.
+
+Deep-learning/embedding models may be introduced later if semantic
+representation becomes a meaningful requirement.
+
+**Status:** Accepted
+
+---
+
+## Decision 004 — ML Data Storage
+
+**Decision:** PostgreSQL is the persistent source of truth.
+
+**Reason:**
+The ML pipeline should operate on structured data retrieved from the
+database, while JSON/CSV can be used for ingestion and experimentation.
+
+**Status:** Accepted
+
+---
+
+## Decision 005 — Conversational Interface
+
+**Decision:** The chatbot is an interface over SignalForge's analytics,
+not the analytics engine itself.
+
+**Reason:**
+The system should retrieve factual signal information from the backend
+rather than allowing an LLM to invent analytics.
+
+**Status:** Accepted
