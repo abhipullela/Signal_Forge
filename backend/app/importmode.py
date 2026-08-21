@@ -22,11 +22,11 @@ print(f"Loaded {len(df)} rows from CSV")
 # ============================================
 
 connection = psycopg2.connect(
-    host="ep-withered-math-axb4z5s5.c-4.us-east-2.aws.neon.tech",
-    port=5432,
-    database="neondb",
-    user="neondb_owner",
-    password=os.getenv("DB_PASSWORD"),
+    host=os.getenv("POSTGRES_HOST"),
+    port=os.getenv("POSTGRES_PORT"),
+    database=os.getenv("POSTGRES_DB"),
+    user=os.getenv("POSTGRES_USER"),
+    password=os.getenv("POSTGRES_PASSWORD"),
     sslmode="require"
 )
 
