@@ -43,7 +43,7 @@ def run_semantic_clustering():
         # Load posts
         # ----------------------------------------------------
 
-        posts, rows = load_posts(conn)
+        posts = load_posts(conn)
 
         if not posts:
             print(
@@ -97,7 +97,6 @@ def run_semantic_clustering():
         metrics = evaluate_clustering(
             embeddings,
             labels,
-            rows,
         )
 
         print("\n--- Metrics ---")
@@ -115,7 +114,6 @@ def run_semantic_clustering():
 
         return {
             "posts": posts,
-            "rows": rows,
             "embeddings": embeddings,
             "labels": labels,
             "metrics": metrics,
