@@ -7,15 +7,25 @@ import psycopg
 from dotenv import load_dotenv
 
 
+# ============================================================
+# CONFIGURATION
+# ============================================================
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ENV_FILE = PROJECT_ROOT / ".env"
 
-load_dotenv(ENV_FILE, override=True)
-
+load_dotenv(
+    ENV_FILE,
+    override=True,
+)
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 DATABASE_PSSWRD = os.getenv("DB_PSSWRD")
 
+
+# ============================================================
+# DATABASE CONNECTION
+# ============================================================
 
 def connect_to_database():
     """Connect to the SignalForge PostgreSQL database."""
@@ -37,20 +47,42 @@ def connect_to_database():
     return conn
 
 
+# ============================================================
+# LOAD POSTS
+# ============================================================
+
 def load_posts(conn):
-    """Load posts and metadata from PostgreSQL."""
+    """
+    Load posts and metadata from PostgreSQL.
+
+    Current posts table schema:
+
+        id
+        source_id
+        community_id
+        external_id
+        title
+        content
+        published_at
+        permalink
+        url
+        domain
+        score
+    """
 
     query = """
         SELECT
-            post_id,
-            platform,
-            text,
-            author_id,
-            community,
-            created_at,
+            id,
+            source_id,
+            community_id,
+            external_id,
+            title,
+            content,
+            published_at,
+            permalink,
             url,
             domain,
-            true_topic
+            score
         FROM posts
     """
 
@@ -58,21 +90,29 @@ def load_posts(conn):
         cur.execute(query)
         rows = cur.fetchall()
 
-    print(f"Loaded {len(rows)} posts from PostgreSQL")
+    print(
+        f"Loaded {len(rows)} posts from PostgreSQL"
+    )
 
     posts = [
         {
             "post_id": row[0],
-            "platform": row[1],
-            "text": row[2],
-            "author_id": row[3],
-            "community": row[4],
-            "created_at": row[5],
-            "url": row[6],
-            "domain": row[7],
-            "true_topic": row[8],
+            "source_id": row[1],
+            "community_id": row[2],
+            "external_id": row[3],
+            "title": row[4],
+            "content": row[5],
+            "published_at": row[6],
+            "permalink": row[7],
+            "url": row[8],
+            "domain": row[9],
+            "score": row[10],
         }
         for row in rows
     ]
 
-    return posts, rows
+    if posts:
+        print("\nFirst post:")
+        print(posts[0])
+
+    return posts
