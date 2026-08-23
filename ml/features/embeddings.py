@@ -20,10 +20,14 @@ def create_embeddings(posts, model):
     """
     Generate normalized semantic embeddings
     for the supplied posts.
+
+    Each post is represented using:
+        title + content
     """
 
     texts = [
-        post["text"]
+        f"{post['title'] or ''} "
+        f"{post['content'] or ''}".strip()
         for post in posts
     ]
 
@@ -33,7 +37,12 @@ def create_embeddings(posts, model):
     )
 
     print("\nEmbeddings:")
-    print(f"  Shape: {embeddings.shape}")
-    print(f"  Dtype: {embeddings.dtype}")
+    print(
+        f"  Shape: {embeddings.shape}"
+    )
+
+    print(
+        f"  Dtype: {embeddings.dtype}"
+    )
 
     return embeddings
