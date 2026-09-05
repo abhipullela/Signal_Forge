@@ -7,12 +7,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-
 # ============================================
 # 1. READ CSV
 # ============================================
 
-df = pd.read_csv("reddit_info.csv")
+df = pd.read_csv("gaming.csv")
 
 print(f"Loaded {len(df)} rows from CSV")
 
@@ -59,36 +58,25 @@ try:
 
 
     # ========================================
-    # 4. PREPARE UNIQUE COMMUNITIES
+    # 4. PREPARE GAMING COMMUNITY
     # ========================================
 
-    communities = (
-        df[
-            ["subreddit.id", "subreddit.name"]
-        ]
-        .drop_duplicates(subset=["subreddit.id"])
-    )
+    subreddit_id = "gaming"
+    subreddit_name = "gaming"
 
-    community_data = []
-
-    for _, row in communities.iterrows():
-
-        subreddit_id = str(row["subreddit.id"])
-        subreddit_name = str(row["subreddit.name"])
-
-        community_data.append(
-            (
-                source_id,
-                subreddit_id,
-                subreddit_name
-            )
+    community_data = [
+        (
+            source_id,
+            subreddit_id,
+            subreddit_name
         )
+    ]
 
-    print(f"Found {len(community_data)} unique communities")
+    print("Found 1 unique community: gaming")
 
 
     # ========================================
-    # 5. INSERT COMMUNITIES IN BATCH
+    # 5. INSERT COMMUNITY
     # ========================================
 
     execute_values(
@@ -105,27 +93,28 @@ try:
 
     connection.commit()
 
-    print("Communities inserted successfully")
+    print("Community inserted successfully")
 
 
     # ========================================
-    # 6. GET COMMUNITY IDs
+    # 6. GET COMMUNITY ID
     # ========================================
 
     cursor.execute("""
-        SELECT id, external_id
+        SELECT id
         FROM communities
-        WHERE source_id = %s;
-    """, (source_id,))
+        WHERE source_id = %s
+        AND external_id = %s;
+    """, (source_id, subreddit_id))
 
-    community_rows = cursor.fetchall()
+    result = cursor.fetchone()
 
-    community_map = {
-        str(external_id): community_id
-        for community_id, external_id in community_rows
-    }
+    if result is None:
+        raise Exception("Gaming community was not found in database.")
 
-    print("Community IDs loaded")
+    community_id = result[0]
+
+    print(f"Gaming community_id = {community_id}")
 
 
     # ========================================
@@ -136,39 +125,70 @@ try:
 
     for _, row in df.iterrows():
 
-        subreddit_id = str(row["subreddit.id"])
+        # ------------------------------------
+        # Title
+        # ------------------------------------
 
-        community_id = community_map.get(subreddit_id)
-
-        if community_id is None:
-            continue
-
-        # Handle missing values
-
-        title = None if pd.isna(row["title"]) else str(row["title"])
-
-        content = None if pd.isna(row["selftext"]) else str(row["selftext"])
-
-        permalink = None if pd.isna(row["permalink"]) else str(row["permalink"])
-
-        url = None if pd.isna(row["url"]) else str(row["url"])
-
-        domain = None if pd.isna(row["domain"]) else str(row["domain"])
-
-        score = None if pd.isna(row["score"]) else int(row["score"])
+        title = (
+            None
+            if pd.isna(row["title"])
+            else str(row["title"])
+        )
 
 
-        # Convert Unix timestamp to PostgreSQL timestamp
+        # ------------------------------------
+        # Body
+        # ------------------------------------
 
-        if pd.isna(row["created_utc"]):
+        content = (
+            None
+            if pd.isna(row["body"])
+            else str(row["body"])
+        )
+
+
+        # ------------------------------------
+        # URL
+        # ------------------------------------
+
+        url = (
+            None
+            if pd.isna(row["url"])
+            else str(row["url"])
+        )
+
+
+        # ------------------------------------
+        # Score
+        # ------------------------------------
+
+        score = (
+            None
+            if pd.isna(row["score"])
+            else int(row["score"])
+        )
+
+
+        # ------------------------------------
+        # Timestamp
+        # ------------------------------------
+
+        if pd.isna(row["created"]):
+
             published_at = None
+
         else:
+
             published_at = pd.to_datetime(
-                row["created_utc"],
+                row["created"],
                 unit="s",
                 utc=True
             )
 
+
+        # ------------------------------------
+        # Prepare post
+        # ------------------------------------
 
         post_data.append(
             (
@@ -178,9 +198,9 @@ try:
                 title,
                 content,
                 published_at,
-                permalink,
+                None,       # permalink
                 url,
-                domain,
+                None,       # domain
                 score
             )
         )
@@ -234,7 +254,7 @@ try:
     # ========================================
 
     print("\n===================================")
-    print("IMPORT COMPLETED SUCCESSFULLY!")
+    print("GAMING IMPORT COMPLETED!")
     print("===================================")
 
 
