@@ -1,0 +1,434 @@
+======================================================================
+1. BASIC DATASET INFORMATION
+======================================================================
+Rows:     23,923
+Columns:  24
+
+Columns:
+  - post_id
+  - source_id
+  - community_id
+  - external_id
+  - title
+  - content
+  - published_at
+  - permalink
+  - url
+  - domain
+  - score
+  - date
+  - hour
+  - day
+  - month
+  - year
+  - day_of_week
+  - week
+  - week_start
+  - month_start
+  - clean_title
+  - clean_content
+  - embedding_text
+  - text_length
+
+Unique post_id values: 23,923
+Duplicate post_id rows: 0
+Unique external_id values: 23,923
+Duplicate external_id rows: 0
+
+======================================================================
+2. MISSING VALUE ANALYSIS
+======================================================================
+post_id                    0  (  0.00%)
+source_id                  0  (  0.00%)
+community_id               0  (  0.00%)
+external_id                0  (  0.00%)
+title                      0  (  0.00%)
+content                6,206  ( 25.94%)
+published_at               0  (  0.00%)
+permalink              3,633  ( 15.19%)
+url                   17,238  ( 72.06%)
+domain                 3,633  ( 15.19%)
+score                      0  (  0.00%)
+date                       0  (  0.00%)
+hour                       0  (  0.00%)
+day                        0  (  0.00%)
+month                      0  (  0.00%)
+year                       0  (  0.00%)
+day_of_week                0  (  0.00%)
+week                       0  (  0.00%)
+week_start                 0  (  0.00%)
+month_start                0  (  0.00%)
+clean_title                0  (  0.00%)
+clean_content         10,561  ( 44.15%)
+embedding_text             0  (  0.00%)
+text_length                0  (  0.00%)
+
+======================================================================
+3. TEXT LENGTH ANALYSIS
+======================================================================
+
+title
+  Minimum: 1
+  Mean:    54.41
+  Median:  48
+  75th %:  69
+  90th %:  96
+  95th %:  118
+  99th %:  193
+  Maximum: 300
+  <  10 chars:   2,021 (  8.45%)
+  <  20 chars:   3,033 ( 12.68%)
+  <  50 chars:  12,431 ( 51.96%)
+  < 100 chars:  21,833 ( 91.26%)
+  < 200 chars:  23,710 ( 99.11%)
+
+content
+  Minimum: 0
+  Mean:    215.43
+  Median:  77
+  75th %:  295
+  90th %:  549
+  95th %:  785
+  99th %:  1631
+  Maximum: 41544
+  <  10 chars:  10,617 ( 44.38%)
+  <  20 chars:  10,764 ( 44.99%)
+  <  50 chars:  11,332 ( 47.37%)
+  < 100 chars:  12,591 ( 52.63%)
+  < 200 chars:  15,554 ( 65.02%)
+
+clean_title
+  Minimum: 1
+  Mean:    54.38
+  Median:  48
+  75th %:  69
+  90th %:  96
+  95th %:  118
+  99th %:  192
+  Maximum: 300
+  <  10 chars:   2,021 (  8.45%)
+  <  20 chars:   3,033 ( 12.68%)
+  <  50 chars:  12,440 ( 52.00%)
+  < 100 chars:  21,837 ( 91.28%)
+  < 200 chars:  23,710 ( 99.11%)
+
+clean_content
+  Minimum: 0
+  Mean:    192.12
+  Median:  72
+  75th %:  272
+  90th %:  501
+  95th %:  695
+  99th %:  1441
+  Maximum: 21655
+  <  10 chars:  10,659 ( 44.56%)
+  <  20 chars:  10,815 ( 45.21%)
+  <  50 chars:  11,412 ( 47.70%)
+  < 100 chars:  12,738 ( 53.25%)
+  < 200 chars:  15,908 ( 66.50%)
+
+embedding_text
+  Minimum: 1
+  Mean:    247.05
+  Median:  133
+  75th %:  323
+  90th %:  554
+  95th %:  759
+  99th %:  1512
+  Maximum: 21689
+  <  10 chars:      60 (  0.25%)
+  <  20 chars:     480 (  2.01%)
+  <  50 chars:   4,742 ( 19.82%)
+  < 100 chars:  10,446 ( 43.67%)
+  < 200 chars:  14,276 ( 59.67%)
+
+======================================================================
+4. SCORE / ENGAGEMENT ANALYSIS
+======================================================================
+Minimum:        -23.00
+Mean:           90.36
+Median:         2.00
+75th percentile: 7.00
+90th percentile: 23.00
+95th percentile: 48.00
+99th percentile: 371.56
+Maximum:         98506.00
+Zero-score posts: 2,259
+Negative-score posts: 52
+
+======================================================================
+5. TEMPORAL ANALYSIS
+======================================================================
+Invalid/missing dates: 0
+First post: 2010-04-05 05:53:35+00:00
+Last post:  2022-12-18 03:11:18+00:00
+Time span:  4639 days 21:17:43
+
+POSTS BY YEAR
+  2010: 114
+  2011: 186
+  2012: 221
+  2013: 512
+  2014: 826
+  2015: 1,214
+  2016: 1,559
+  2017: 2,100
+  2018: 2,160
+  2019: 3,182
+  2020: 4,334
+  2021: 3,405
+  2022: 4,110
+
+POSTS BY MONTH
+  2010-04: 78
+  2010-05: 9
+  2010-06: 6
+  2010-07: 3
+  2010-08: 2
+  2010-09: 7
+  2010-10: 4
+  2010-11: 1
+  2010-12: 4
+  2011-01: 11
+  2011-02: 24
+  2011-03: 22
+  2011-04: 11
+  2011-05: 11
+  2011-06: 16
+  2011-07: 7
+  2011-08: 14
+  2011-09: 17
+  2011-10: 12
+  2011-11: 24
+  2011-12: 17
+  2012-01: 16
+  2012-02: 8
+  2012-03: 21
+  2012-04: 15
+  2012-05: 15
+  2012-06: 6
+  2012-07: 14
+  2012-08: 26
+  2012-09: 27
+  2012-10: 15
+  2012-11: 29
+  2012-12: 29
+  2013-01: 39
+  2013-02: 39
+  2013-03: 35
+  2013-04: 49
+  2013-05: 47
+  2013-06: 27
+  2013-07: 39
+  2013-08: 46
+  2013-09: 44
+  2013-10: 52
+  2013-11: 46
+  2013-12: 49
+  2014-01: 63
+  2014-02: 64
+  2014-03: 79
+  2014-04: 61
+  2014-05: 100
+  2014-06: 57
+  2014-07: 56
+  2014-08: 59
+  2014-09: 61
+  2014-10: 83
+  2014-11: 66
+  2014-12: 77
+  2015-01: 63
+  2015-02: 80
+  2015-03: 90
+  2015-04: 98
+  2015-05: 85
+  2015-06: 106
+  2015-07: 165
+  2015-08: 77
+  2015-09: 115
+  2015-10: 123
+  2015-11: 98
+  2015-12: 114
+  2016-01: 109
+  2016-02: 182
+  2016-03: 117
+  2016-04: 123
+  2016-05: 115
+  2016-06: 117
+  2016-07: 111
+  2016-08: 129
+  2016-09: 123
+  2016-10: 137
+  2016-11: 171
+  2016-12: 125
+  2017-01: 177
+  2017-02: 201
+  2017-03: 194
+  2017-04: 176
+  2017-05: 154
+  2017-06: 171
+  2017-07: 164
+  2017-08: 174
+  2017-09: 158
+  2017-10: 184
+  2017-11: 194
+  2017-12: 153
+  2018-01: 136
+  2018-02: 162
+  2018-03: 172
+  2018-04: 205
+  2018-05: 173
+  2018-06: 190
+  2018-07: 192
+  2018-08: 161
+  2018-09: 175
+  2018-10: 217
+  2018-11: 212
+  2018-12: 165
+  2019-01: 223
+  2019-02: 230
+  2019-03: 254
+  2019-04: 290
+  2019-05: 249
+  2019-06: 235
+  2019-07: 262
+  2019-08: 236
+  2019-09: 262
+  2019-10: 315
+  2019-11: 353
+  2019-12: 273
+  2020-01: 327
+  2020-02: 325
+  2020-03: 415
+  2020-04: 476
+  2020-05: 452
+  2020-06: 403
+  2020-07: 380
+  2020-08: 351
+  2020-09: 274
+  2020-10: 326
+  2020-11: 325
+  2020-12: 280
+  2021-01: 329
+  2021-02: 364
+  2021-03: 335
+  2021-04: 317
+  2021-05: 301
+  2021-06: 256
+  2021-07: 229
+  2021-08: 238
+  2021-09: 253
+  2021-10: 267
+  2021-11: 284
+  2021-12: 232
+  2022-01: 246
+  2022-02: 217
+  2022-03: 14
+  2022-12: 3,633
+
+DAILY DENSITY
+  Calendar days:     4,641
+  Active days:       3,529
+  Zero-post days:    1,112
+  Mean posts/day:    6.78
+  Median posts/day:  5.00
+  Maximum posts/day: 1,224
+
+======================================================================
+6. COMMUNITY ANALYSIS
+======================================================================
+Unique communities: 3
+
+Top 20 communities:
+  423: 20,290
+  425: 1,876
+  424: 1,757
+
+======================================================================
+7. DOMAIN ANALYSIS
+======================================================================
+Unique domains: 2,267
+
+Top 20 domains:
+  self.datasets: 15,190
+  unknown: 3,633
+  github.com: 429
+  kaggle.com: 321
+  youtube.com: 167
+  youtu.be: 116
+  medium.com: 91
+  reddit.com: 78
+  docs.google.com: 69
+  statanalytica.com: 63
+  data.world: 60
+  lionbridge.ai: 51
+  i.redd.it: 42
+  twitter.com: 39
+  gengo.ai: 37
+  towardsdatascience.com: 24
+  drive.google.com: 21
+  gist.github.com: 21
+  self.pushshift: 21
+  journals.sagepub.com: 21
+
+======================================================================
+8. DUPLICATE CONTENT ANALYSIS
+======================================================================
+Rows involved in duplicate text: 496
+Unique duplicated text values: 192
+
+======================================================================
+9. CLEANED TEXT SAMPLE
+======================================================================
+
+Post 1
+  title: MovieLens Data Sets
+  content: nan
+  embedding_text: movielens data sets
+
+Post 2
+  title: Australian postcodes with geocoding
+  content: nan
+  embedding_text: australian postcodes with geocoding
+
+Post 3
+  title: MusicBrainz database - artists, releases, tracks, labels, incl. relationships
+  content: nan
+  embedding_text: musicbrainz database - artists, releases, tracks, labels, incl. relationships
+
+Post 4
+  title: The Guardian's data store - large collection of datasets on topics like banks, UK elections, government borrowing, primary school league tables...
+  content: nan
+  embedding_text: the guardian's data store - large collection of datasets on topics like banks, uk elections, government borrowing, primary school league tables...
+
+Post 5
+  title: US Data.gov datasets
+  content: nan
+  embedding_text: us data.gov datasets
+
+Post 6
+  title: Data.australia.gov.au datasets
+  content: nan
+  embedding_text: data.australia.gov.au datasets
+
+Post 7
+  title: Lonely Planet Geo-related API [geocoding, place names, mapping]
+  content: nan
+  embedding_text: lonely planet geo-related api [geocoding, place names, mapping]
+
+Post 8
+  title: Discogs API [music, requires signup/API key]
+  content: nan
+  embedding_text: discogs api [music, requires signup/api key]
+
+Post 9
+  title: Real-Time Access to a lot of datasets through one API (over 200 datasets ranging from nextbus,twitter to amazon)
+  content: [YQL](http://developer.yahoo.com/yql/)
+
+PROTIP: Try the console and press show tables on the right sidebar
+  embedding_text: real-time access to a lot of datasets through one api (over 200 datasets ranging from nextbus,twitter to amazon) [yql]( protip: try the console and press show tables on the right sidebar
+
+Post 10
+  title: Publicly available and downloadable databases [repost from programming]
+  content: nan
+  embedding_text: publicly available and downloadable databases [repost from programming]
