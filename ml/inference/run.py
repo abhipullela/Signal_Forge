@@ -1,6 +1,8 @@
 """SignalForge ML inference entry point."""
 
 from collections import Counter
+import numpy as np
+from ml.inference.export_output import export_ml_output
 
 from ml.detection.cluster_detector import (
     cluster_embeddings,
@@ -64,22 +66,15 @@ def run_semantic_clustering():
         # Cluster embeddings
         # ----------------------------------------------------
 
-        labels = cluster_embeddings(
+        labels, clusterer = cluster_embeddings(
             embeddings
         )
 
-        print("\nLABELS:")
-        print(labels)
-
-        print("\nUnique labels:")
-        print(
-            sorted(set(labels))
-        )
-
-        print("\nCluster sizes:")
-        print(
-            Counter(labels)
-        )
+        print("\nDEBUG LABEL TYPE:", type(labels))
+        print("DEBUG LABEL SHAPE:", getattr(labels, "shape", None))
+        print("DEBUG LABEL LENGTH:", len(labels))
+        print("DEBUG FIRST ITEM:", labels[0])
+        print("DEBUG FIRST ITEM TYPE:", type(labels[0]))
 
         # ----------------------------------------------------
         # Display clusters
@@ -112,12 +107,17 @@ def run_semantic_clustering():
                     f"{name}: {value}"
                 )
 
-        return {
+                results = {
             "posts": posts,
             "embeddings": embeddings,
             "labels": labels,
             "metrics": metrics,
         }
+
+        # Export complete ML inference output
+        export_ml_output(results)
+
+        return results
 
     finally:
 
