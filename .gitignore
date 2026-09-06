@@ -171,3 +171,4 @@ reports/
 docker-compose.override.yml
 
 reddit_info.csv
+node_modules
