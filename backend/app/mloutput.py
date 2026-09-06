@@ -27,7 +27,8 @@ print("Connected to PostgreSQL")
 # 2. READ ML OUTPUT CSV
 # ============================================
 
-csv_file = "ml_output.csv"
+import os
+csv_file = os.path.join(os.path.dirname(__file__), "../../outputs/ml_output.csv")
 
 df = pd.read_csv(csv_file)
 
