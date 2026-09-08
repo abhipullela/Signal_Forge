@@ -41,11 +41,6 @@ print(f"Loaded {len(df)} rows from CSV")
 
 print("Checking CSV columns...")
 
-if "semantic_cluster_score" in df.columns and "signal_score" not in df.columns:
-    df.rename(columns={"semantic_cluster_score": "signal_score"}, inplace=True)
-if "semantic_cluster_status" in df.columns and "signal_status" not in df.columns:
-    df.rename(columns={"semantic_cluster_status": "signal_status"}, inplace=True)
-
 required_columns = [
     "post_id",
     "source_id",
