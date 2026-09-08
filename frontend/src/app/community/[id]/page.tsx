@@ -129,7 +129,7 @@ export default async function CommunityDetail({ params }: { params: { id: string
 
         </div>
 
-        <TimeFilteredChart communityId={communityId} />
+        <TimeFilteredChart communityId={communityId} alerts={alerts} />
         
         {/* Curated Alerts Table */}
         <CommunityAlertsTable alerts={alerts} />

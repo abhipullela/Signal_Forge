@@ -19,7 +19,7 @@ const FILTERS: { key: FilterKey; label: string; days?: number }[] = [
   { key: '7',    label: 'Last 7 days',   days: 7 },
 ];
 
-export default function TimeFilteredChart({ communityId }: { communityId: string }) {
+export default function TimeFilteredChart({ communityId, alerts = [] }: { communityId: string, alerts?: any[] }) {
   const [activeFilter, setActiveFilter] = useState<FilterKey>('all');
   const [data, setData] = useState<VolumeDataPoint[]>([]);
   const [bucket, setBucket] = useState<string>('day');
@@ -90,7 +90,7 @@ export default function TimeFilteredChart({ communityId }: { communityId: string
           </div>
         </div>
       ) : (
-        <VolumeChart data={data} bucket={bucket} />
+        <VolumeChart data={data} bucket={bucket} alerts={alerts} />
       )}
     </Card>
   );

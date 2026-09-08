@@ -1,6 +1,7 @@
 "use client";
 
-import { Area, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import React, { Fragment } from "react";
+import { Area, AreaChart, CartesianGrid, ReferenceLine, ReferenceDot, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 // Parse ISO date string as LOCAL time, not UTC.
 // new Date("2020-04-11") → UTC midnight → displays as Apr 10 in +5:30 timezone.
@@ -34,7 +35,7 @@ function formatTooltipLabel(dateStr: string, bucket: string): string {
   return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
-export default function VolumeChart({ data, bucket = 'day' }: { data: any[], bucket?: string }) {
+export default function VolumeChart({ data, bucket = 'day', alerts = [] }: { data: any[], bucket?: string, alerts?: any[] }) {
   if (!data || data.length === 0) {
     return (
       <div className="h-[350px] w-full mt-6 flex items-center justify-center text-zinc-500 text-sm">
@@ -76,10 +77,49 @@ export default function VolumeChart({ data, bucket = 'day' }: { data: any[], buc
   const maxCount = Math.max(...data.map(d => d.post_count));
   const peakPoint = data.find(d => d.post_count === maxCount);
 
+  // Cross-reference database alerts with chart data points
+  let alertPoints: any[] = [];
+  const chartData = data.map(d => ({ ...d, isAlert: false }));
+
+  if (alerts && alerts.length > 0 && chartData.length > 0) {
+    alerts.forEach(alert => {
+      if (!alert.time_window) return;
+      
+      // 1. Extract clean YYYY-MM-DD and parse locally to avoid UTC drift
+      const dateOnly = alert.time_window.split('T')[0].split(' ')[0];
+      const alertTime = parseLocalDate(dateOnly).getTime();
+      
+      if (isNaN(alertTime)) return;
+      
+      // 2. Mathematically snap to the absolute closest date on the chart
+      let matchIndex = -1;
+      let minDiff = Infinity;
+      
+      chartData.forEach((d, idx) => {
+        const dTime = parseLocalDate(d.date).getTime();
+        if (!isNaN(dTime)) {
+          const diff = Math.abs(dTime - alertTime);
+          if (diff < minDiff) {
+            minDiff = diff;
+            matchIndex = idx;
+          }
+        }
+      });
+      
+      // 3. Mark the matched point
+      if (matchIndex !== -1) {
+        chartData[matchIndex].isAlert = true;
+      }
+    });
+    
+    // 4. Extract uniquely marked points to avoid Recharts rendering overlapping dots
+    alertPoints = chartData.filter(d => d.isAlert);
+  }
+
   return (
     <div className="h-[350px] w-full mt-6">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ top: 16, right: 30, left: 0, bottom: 0 }}>
+        <AreaChart data={chartData} margin={{ top: 16, right: 30, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%"  stopColor="#10b981" stopOpacity={0.35} />
@@ -150,6 +190,25 @@ export default function VolumeChart({ data, bucket = 'day' }: { data: any[], buc
             />
           )}
 
+          {alertPoints.map((pt, idx) => (
+            <Fragment key={`alert-${idx}`}>
+              <ReferenceLine
+                x={pt.date}
+                stroke="#ef4444"
+                strokeDasharray="3 3"
+                opacity={0.5}
+              />
+              <ReferenceDot
+                x={pt.date}
+                y={pt.post_count}
+                fill="#ef4444"
+                stroke="#7f1d1d"
+                strokeWidth={2}
+                r={4}
+              />
+            </Fragment>
+          ))}
+
           <Area
             type="basis"
             dataKey="post_count"
@@ -158,11 +217,12 @@ export default function VolumeChart({ data, bucket = 'day' }: { data: any[], buc
             fillOpacity={1}
             fill="url(#colorCount)"
             isAnimationActive={false}
-            activeDot={{
-              r: 5,
-              fill: '#10b981',
-              stroke: '#fff',
-              strokeWidth: 2,
+            activeDot={(props: any) => {
+              const { cx, cy, payload } = props;
+              if (payload && payload.isAlert) {
+                return <circle cx={cx} cy={cy} r={5} fill="#ef4444" stroke="#7f1d1d" strokeWidth={2} />;
+              }
+              return <circle cx={cx} cy={cy} r={5} fill="#10b981" stroke="#fff" strokeWidth={2} />;
             }}
             dot={false}
           />
