@@ -25,7 +25,9 @@ cursor = connection.cursor()
 # 2. READ ALERTS CSV
 # ============================================
 
-df = pd.read_csv("alerts.csv")
+import os
+csv_path = os.path.join(os.path.dirname(__file__), "../../outputs/alerts.csv")
+df = pd.read_csv(csv_path)
 
 print(f"CSV rows: {len(df)}")
 print(f"CSV columns: {len(df.columns)}")
