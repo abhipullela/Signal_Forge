@@ -25,7 +25,7 @@ export interface UISignal {
 
 export async function fetchSignals(communityId: string | number): Promise<UISignal[]> {
   try {
-    const res = await fetch(`http://localhost:8000/api/community/${communityId}/signals`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/community/${communityId}/signals`, {
       cache: 'no-store'
     });
     
@@ -86,7 +86,7 @@ export interface SystemStats {
 
 export async function fetchStats(): Promise<SystemStats> {
   try {
-    const res = await fetch(`http://localhost:8000/api/stats`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/stats`, {
       cache: 'no-store'
     });
     
@@ -114,7 +114,7 @@ export interface CommunityOverview {
 
 export async function fetchCommunities(): Promise<CommunityOverview[]> {
   try {
-    const res = await fetch(`http://localhost:8000/api/communities`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/communities`, {
       cache: 'no-store'
     });
     if (!res.ok) {
@@ -143,7 +143,7 @@ export interface AlertData {
 
 export async function fetchCommunityAlerts(id: string | number): Promise<AlertData[]> {
   try {
-    const res = await fetch(`http://localhost:8000/api/community/${id}/alerts`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/community/${id}/alerts`, {
       cache: 'no-store'
     });
     if (!res.ok) {
@@ -167,7 +167,7 @@ export interface DetailedCommunityOverview {
 
 export async function fetchCommunityOverviewById(id: string | number): Promise<DetailedCommunityOverview | null> {
   try {
-    const res = await fetch(`http://localhost:8000/api/community/${id}/overview`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/community/${id}/overview`, {
       cache: 'no-store'
     });
     if (!res.ok) return null;
@@ -191,7 +191,7 @@ export interface CommunityVolumeResponse {
 
 export async function fetchCommunityVolume(id: string | number): Promise<CommunityVolumeResponse> {
   try {
-    const res = await fetch(`http://localhost:8000/api/community/${id}/trend`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/community/${id}/trend`, {
       cache: 'no-store'
     });
     if (!res.ok) return { trend: [], bucket: 'day' };
@@ -219,7 +219,7 @@ export interface SignalDetail {
 
 export async function fetchSignalDetails(postId: string | number): Promise<SignalDetail | null> {
   try {
-    const res = await fetch(`http://localhost:8000/api/signal/${postId}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/signal/${postId}`, {
       cache: 'no-store'
     });
     if (!res.ok) return null;
@@ -233,7 +233,7 @@ export async function fetchSignalDetails(postId: string | number): Promise<Signa
 export async function searchSignals(query: string, communityId?: string): Promise<UISignal[]> {
   if (!query) return [];
   try {
-    const url = new URL(`http://localhost:8000/api/search`);
+    const url = new URL(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/search`);
     url.searchParams.append("query", query);
     if (communityId) {
       url.searchParams.append("community_id", communityId);

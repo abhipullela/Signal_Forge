@@ -156,14 +156,33 @@ def get_communities():
         cursor = connection.cursor()
 
         cursor.execute("""
+            WITH primary_communities AS (
+                SELECT cluster_id, community_id
+                FROM (
+                    SELECT cluster_id, community_id,
+                           ROW_NUMBER() OVER(PARTITION BY cluster_id ORDER BY COUNT(*) DESC) as rn
+                    FROM ml_results
+                    WHERE cluster_id IS NOT NULL
+                    GROUP BY cluster_id, community_id
+                ) t
+                WHERE rn = 1
+            ),
+            alert_counts AS (
+                SELECT pc.community_id, COUNT(a.alert_id) as alerts_count
+                FROM alerts a
+                JOIN primary_communities pc ON a.cluster_id = pc.cluster_id
+                GROUP BY pc.community_id
+            )
             SELECT
-                community_id,
-                COUNT(*) AS total_posts,
-                COUNT(*) FILTER (WHERE signal_status IN ('HIGH', 'MEDIUM')) AS active_signals,
-                ROUND(AVG(signal_score)::numeric, 1) AS average_novelty
-            FROM ml_results
-            GROUP BY community_id
-            ORDER BY community_id
+                m.community_id,
+                COUNT(m.*) AS total_posts,
+                COUNT(m.*) FILTER (WHERE m.signal_status IN ('HIGH', 'MEDIUM')) AS active_signals,
+                ROUND(AVG(m.signal_score)::numeric, 1) AS average_novelty,
+                COALESCE(ac.alerts_count, 0) AS alerts_count
+            FROM ml_results m
+            LEFT JOIN alert_counts ac ON m.community_id = ac.community_id
+            GROUP BY m.community_id, ac.alerts_count
+            ORDER BY m.community_id
         """)
 
         rows = cursor.fetchall()
@@ -179,7 +198,8 @@ def get_communities():
                 "community_id": row[0],
                 "total_posts": row[1],
                 "active_signals": row[2] or 0,
-                "average_novelty": float(row[3]) if row[3] else 0.0
+                "average_novelty": float(row[3]) if row[3] else 0.0,
+                "alerts_count": row[4]
             })
 
         return {
@@ -287,6 +307,46 @@ def community_overview(community_id: str):
 # ============================================
 # 8. GET RECENT SIGNALS
 # ============================================
+
+@app.get("/api/community/{id}/alerts")
+def get_community_alerts(id: str):
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        cursor.execute("""
+            WITH primary_communities AS (
+                SELECT cluster_id, community_id
+                FROM (
+                    SELECT cluster_id, community_id,
+                           ROW_NUMBER() OVER(PARTITION BY cluster_id ORDER BY COUNT(*) DESC) as rn
+                    FROM ml_results
+                    WHERE cluster_id IS NOT NULL
+                    GROUP BY cluster_id, community_id
+                ) t
+                WHERE rn = 1
+            )
+            SELECT a.*
+            FROM alerts a
+            JOIN primary_communities pc ON a.cluster_id = pc.cluster_id
+            WHERE pc.community_id = %s
+        """, (get_db_community_id(id),))
+
+        rows = cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+
+        cursor.close()
+        connection.close()
+
+        alerts = []
+        for row in rows:
+            alerts.append(dict(zip(columns, row)))
+
+        return {
+            "alerts": alerts
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/community/{community_id}/signals", response_model=CommunitySignalsResponse)
 def community_signals(community_id: str):
@@ -661,6 +721,85 @@ def community_trend(community_id: str, days: Optional[int] = None):
             "community_id": community_id,
             "bucket": date_trunc,
             "trend": trend
+        }
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+
+# ============================================
+# 12. SEARCH SIGNALS
+# ============================================
+
+@app.get("/api/search")
+def search_signals(query: str, community_id: Optional[str] = None):
+
+    try:
+
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        sql_query = """
+            SELECT
+                post_id,
+                title,
+                cluster_id,
+                domain,
+                cluster_size,
+                cluster_rank,
+                ROUND((score::numeric / NULLIF(MAX(score) OVER(), 0)::numeric) * 1000.0) AS signal_score,
+                signal_status,
+                published_at
+            FROM ml_results
+            WHERE (title ILIKE %s OR content ILIKE %s)
+            AND score IS NOT NULL
+        """
+        params = [f"%{query}%", f"%{query}%"]
+
+        if community_id:
+            db_community_id = get_db_community_id(community_id)
+            sql_query += " AND community_id = %s"
+            params.append(db_community_id)
+
+        sql_query += """
+            ORDER BY 
+                (CASE 
+                    WHEN signal_status = 'HIGH' THEN score * 10.0 
+                    WHEN signal_status = 'MEDIUM' THEN score * 2.0 
+                    ELSE score 
+                END) DESC,
+                published_at DESC
+            LIMIT 20
+        """
+
+        cursor.execute(sql_query, tuple(params))
+        rows = cursor.fetchall()
+
+        cursor.close()
+        connection.close()
+
+        signals = []
+
+        for row in rows:
+
+            signals.append({
+                "post_id": row[0],
+                "title": row[1],
+                "cluster_id": row[2],
+                "domain": row[3],
+                "cluster_size": row[4],
+                "cluster_rank": row[5],
+                "signal_score": row[6],
+                "signal_status": row[7],
+                "published_at": row[8].isoformat() if hasattr(row[8], 'isoformat') else str(row[8]) if row[8] else None
+            })
+
+        return {
+            "signals": signals
         }
 
     except Exception as e:

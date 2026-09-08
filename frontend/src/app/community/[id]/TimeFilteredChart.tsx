@@ -57,23 +57,23 @@ export default function TimeFilteredChart({ communityId }: { communityId: string
   };
 
   return (
-    <Card className="bg-zinc-950/50 border-zinc-800/50 backdrop-blur-xl p-6">
+    <Card className="bg-card border-border backdrop-blur-xl p-6 transition-colors duration-300">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
-          <h2 className="text-lg font-bold text-white">Signal Volume</h2>
-          <p className="text-zinc-400 text-sm mt-1">
+          <h2 className="text-lg font-bold text-foreground">Signal Volume</h2>
+          <p className="text-muted-foreground text-sm mt-1">
             Volume of detected signals over the selected time period.
           </p>
         </div>
-        <div className="flex gap-1 mt-4 md:mt-0 bg-zinc-900 rounded-md p-1 border border-zinc-800">
+        <div className="flex gap-1 mt-4 md:mt-0 bg-muted/50 rounded-md p-1 border border-border">
           {FILTERS.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => handleFilter(key)}
               className={`px-3 py-1.5 text-xs font-semibold rounded transition-all duration-150 ${
                 activeFilter === key
-                  ? 'bg-zinc-800 text-white shadow-sm'
-                  : 'text-zinc-400 hover:text-white'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               {label}
@@ -84,7 +84,7 @@ export default function TimeFilteredChart({ communityId }: { communityId: string
 
       {loading ? (
         <div className="h-[350px] w-full mt-6 flex items-center justify-center">
-          <div className="flex items-center gap-3 text-zinc-500 text-sm">
+          <div className="flex items-center gap-3 text-muted-foreground text-sm">
             <span className="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
             Loading chart data...
           </div>

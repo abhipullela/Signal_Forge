@@ -3,7 +3,7 @@ import { LayoutDashboard, Activity, Settings, User } from "lucide-react";
 
 export default function Sidebar() {
   return (
-    <div className="fixed top-0 left-0 h-screen bg-black/90 backdrop-blur-md border-r border-zinc-800/50 flex flex-col items-center w-16 hover:w-56 transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group z-50 overflow-hidden">
+    <div className="fixed top-0 left-0 h-screen bg-background/90 backdrop-blur-md border-r border-border flex flex-col items-center w-16 hover:w-56 transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group z-50 overflow-hidden">
       
       {/* Top Section */}
       <div className="flex flex-col w-full mt-6 space-y-2 px-3">
@@ -25,7 +25,7 @@ function NavItem({ href, icon, label }: { href: string; icon: React.ReactNode; l
   return (
     <Link 
       href={href}
-      className="flex items-center space-x-4 p-2 text-zinc-500 hover:text-zinc-100 hover:bg-zinc-900 rounded-lg transition-colors w-full"
+      className="flex items-center space-x-4 p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors w-full"
     >
       <div className="flex items-center justify-center w-6">{icon}</div>
       <span className="text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out whitespace-nowrap">

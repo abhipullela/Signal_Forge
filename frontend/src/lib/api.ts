@@ -25,7 +25,7 @@ export interface UISignal {
 
 export async function fetchSignals(communityId: string | number): Promise<UISignal[]> {
   try {
-    const res = await fetch(`http://localhost:8000/api/community/${communityId}/signals`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/community/${communityId}/signals`, {
       cache: 'no-store'
     });
     
@@ -86,7 +86,7 @@ export interface SystemStats {
 
 export async function fetchStats(): Promise<SystemStats> {
   try {
-    const res = await fetch(`http://localhost:8000/api/stats`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/stats`, {
       cache: 'no-store'
     });
     
@@ -109,11 +109,13 @@ export interface CommunityOverview {
   total_posts: number;
   active_signals: number;
   average_novelty: number;
+  alerts_count: number;
+  alerts?: number;
 }
 
 export async function fetchCommunities(): Promise<CommunityOverview[]> {
   try {
-    const res = await fetch(`http://localhost:8000/api/communities`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/communities`, {
       cache: 'no-store'
     });
     if (!res.ok) {
@@ -123,6 +125,35 @@ export async function fetchCommunities(): Promise<CommunityOverview[]> {
     return data.communities || [];
   } catch (error) {
     console.error("fetchCommunities Error:", error);
+    return [];
+  }
+}
+
+export interface AlertData {
+  cluster_id: number;
+  volume: number;
+  growth_rate: number;
+  velocity: number;
+  acceleration: number;
+  community_spread_score: number;
+  risk_type: string;
+  alert_priority: number;
+  alert_level: string;
+  source_post_count: number;
+}
+
+export async function fetchCommunityAlerts(id: string | number): Promise<AlertData[]> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/community/${id}/alerts`, {
+      cache: 'no-store'
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to fetch community alerts`);
+    }
+    const data = await res.json();
+    return data.alerts || [];
+  } catch (error) {
+    console.error("fetchCommunityAlerts Error:", error);
     return [];
   }
 }
@@ -137,7 +168,7 @@ export interface DetailedCommunityOverview {
 
 export async function fetchCommunityOverviewById(id: string | number): Promise<DetailedCommunityOverview | null> {
   try {
-    const res = await fetch(`http://localhost:8000/api/community/${id}/overview`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/community/${id}/overview`, {
       cache: 'no-store'
     });
     if (!res.ok) return null;
@@ -161,7 +192,7 @@ export interface CommunityVolumeResponse {
 
 export async function fetchCommunityVolume(id: string | number): Promise<CommunityVolumeResponse> {
   try {
-    const res = await fetch(`http://localhost:8000/api/community/${id}/trend`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/community/${id}/trend`, {
       cache: 'no-store'
     });
     if (!res.ok) return { trend: [], bucket: 'day' };
@@ -170,5 +201,79 @@ export async function fetchCommunityVolume(id: string | number): Promise<Communi
   } catch (e) {
     console.error("fetchCommunityVolume error:", e);
     return { trend: [], bucket: 'day' };
+  }
+}
+
+export interface SignalDetail {
+  post_id: number;
+  community_id: number;
+  title: string | null;
+  content: string | null;
+  cluster_id: number | null;
+  cluster_size: number | null;
+  cluster_rank: number | null;
+  signal_score: number | null;
+  signal_status: string | null;
+  published_at: string | null;
+  url: string | null;
+}
+
+export async function fetchSignalDetails(postId: string | number): Promise<SignalDetail | null> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/signal/${postId}`, {
+      cache: 'no-store'
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    console.error("fetchSignalDetails error:", e);
+    return null;
+  }
+}
+
+export async function searchSignals(query: string, communityId?: string): Promise<UISignal[]> {
+  if (!query) return [];
+  try {
+    const url = new URL(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/search`);
+    url.searchParams.append("query", query);
+    if (communityId) {
+      url.searchParams.append("community_id", communityId);
+    }
+    const res = await fetch(url.toString(), { cache: 'no-store' });
+    if (!res.ok) return [];
+    
+    const data = await res.json();
+    const rawSignals: RawSignal[] = data.signals || [];
+    
+    return rawSignals.map((signal) => {
+      const rawScore = signal.signal_score ?? 0;
+      const scoreStr = (rawScore / 100).toFixed(1) + "x strength";
+
+      let trend: 'up' | 'down' | 'flat' = 'flat';
+      const status = (signal.signal_status || "").toUpperCase();
+      
+      if (status === 'RISING' || status === 'HIGH') trend = 'up';
+      else if (status === 'FALLING' || status === 'LOW') trend = 'down';
+
+      let sourceStr = 'Direct / Organic';
+      if (signal.domain && signal.domain !== 'NaN' && signal.domain !== 'null') {
+        sourceStr = signal.domain;
+      } else if (signal.cluster_id) {
+        sourceStr = `Cluster ${signal.cluster_id}`;
+      } else {
+        sourceStr = "Global";
+      }
+
+      return {
+        id: String(signal.post_id || Math.random()),
+        topic: signal.title || "Unnamed Signal",
+        score: scoreStr,
+        source: sourceStr,
+        trend: trend
+      };
+    });
+  } catch (e) {
+    console.error("searchSignals error:", e);
+    return [];
   }
 }
