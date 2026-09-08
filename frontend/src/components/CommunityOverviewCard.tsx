@@ -53,3 +53,22 @@ export default function CommunityOverviewCard({
     </Link>
   );
 }
+              <span className="text-muted-foreground group-hover:text-zinc-400 transition-colors text-xs font-semibold tracking-widest uppercase">Active Signals</span>
+              <span className="text-xl font-semibold text-white tabular-nums">{activeSignals}</span>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground group-hover:text-zinc-400 transition-colors text-xs font-semibold tracking-widest uppercase">Avg Novelty</span>
+              <span className="text-xl font-semibold text-white tabular-nums">{aggregateNovelty.toFixed(1)}</span>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground group-hover:text-zinc-400 transition-colors text-xs font-semibold tracking-widest uppercase">24h Volume</span>
+              <span className="text-xl font-semibold text-white tabular-nums">{messageVolume24h}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}
